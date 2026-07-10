@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — ScrapLake</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="admin-body">
+
+  <!-- ===== Login ===== -->
+  <div class="login-wrap" id="loginWrap">
+    <div class="login-card">
+      <p class="brand-text">Scrap<em>Lake</em></p>
+      <h1>Admin Login</h1>
+      <p class="sub">Sign in with your admin email and password.</p>
+      <form id="loginForm">
+        <div class="field"><label for="lEmail">Email</label><input id="lEmail" type="email" autocomplete="username" required /><small class="err"></small></div>
+        <div class="field"><label for="lPass">Password</label><input id="lPass" type="password" autocomplete="current-password" required /><small class="err"></small></div>
+        <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+        <p class="form-error" id="loginError" hidden></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Dashboard ===== -->
+  <div id="dashboard" hidden>
+    <div class="admin-topbar">
+      <span class="brand-text">Scrap<em>Lake</em> Admin</span>
+      <span class="who" id="adminWho"></span>
+      <button class="btn btn-gold btn-sm" id="exportBtn">Export Excel (CSV)</button>
+      <button class="btn btn-outline btn-sm" id="printBtn" style="background:transparent;color:#fff;border-color:#64748B">Print / PDF</button>
+      <button class="btn btn-outline btn-sm" id="logoutBtn" style="background:transparent;color:#fff;border-color:#64748B">Logout</button>
+    </div>
+
+    <div class="stats-grid" id="statsGrid"></div>
+
+    <div class="admin-tools">
+      <input id="searchInput" type="search" placeholder="Search customer name or mobile number…" />
+      <select id="statusFilter"><option value="">All statuses</option></select>
+      <select id="typeFilter"><option value="">All scrap types</option></select>
+    </div>
+
+    <div class="req-list" id="reqList"></div>
+    <p class="empty" id="emptyMsg" hidden>No requests match the current filters.</p>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

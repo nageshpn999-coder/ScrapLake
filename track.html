@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Track Pickup — ScrapLake</title>
+  <meta name="description" content="Track your ScrapLake scrap pickup status with your request ID or mobile number." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&family=Noto+Sans+Telugu:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">⚖</span><span class="brand-text">Scrap<em>Lake</em></span></a>
+      <div class="header-actions">
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button class="lang-btn active" data-lang="en">EN</button>
+          <button class="lang-btn" data-lang="te">తె</button>
+        </div>
+        <a class="btn btn-primary btn-sm" href="index.html#book" data-i18n="nav_book">Book Pickup</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container narrow">
+      <h1 class="section-title" data-i18n="track_title">Track Pickup Status</h1>
+      <p class="section-sub" data-i18n="track_sub">Enter your request ID or registered mobile number.</p>
+
+      <form id="trackForm" class="input-row" style="margin-bottom:1.5rem">
+        <input id="trackQuery" type="text" data-i18n-ph="track_placeholder" placeholder="Request ID or mobile number"
+          style="flex:1;font:inherit;padding:.7rem .9rem;border:1.5px solid var(--line);border-radius:9px" required />
+        <button class="btn btn-primary" type="submit" data-i18n="track_btn">Track</button>
+      </form>
+
+      <div id="trackResults"></div>
+      <p class="empty" id="trackEmpty" hidden data-i18n="track_none">No request found. Check the ID or number and try again.</p>
+    </div>
+  </main>
+
+  <div class="fabs">
+    <a class="fab fab-call" href="tel:+919515624416" aria-label="Call ScrapLake">📞</a>
+    <a class="fab fab-wa" href="https://wa.me/919515624416" target="_blank" rel="noopener" aria-label="WhatsApp ScrapLake">💬</a>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/track.js"></script>
+</body>
+</html>
