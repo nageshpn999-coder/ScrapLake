@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      // Admins are listed in the `admins` collection, keyed by auth UID.
+      return request.auth != null &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    match /requests/{requestId} {
+      // Anyone may create a pickup request, with basic shape validation.
+      allow create: if
+        request.resource.data.name is string && request.resource.data.name.size() > 0 &&
+        request.resource.data.mobile is string && request.resource.data.mobile.matches('^[6-9][0-9]{9}$') &&
+        request.resource.data.weightKg is number && request.resource.data.weightKg >= 100 &&
+        request.resource.data.status == 'Pending';
+
+      // Public read so customers can track by request ID / mobile.
+      // (Tighten to admin-only if you move tracking behind OTP/auth.)
+      allow read: if true;
+
+      // Only admins may update or delete.
+      allow update, delete: if isAdmin();
+    }
+
+    match /rates/{rateId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /admins/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false; // manage via Firebase console only
+    }
+  }
+}
