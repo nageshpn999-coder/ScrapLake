@@ -17,18 +17,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let rows = [];
     try {
-      if (FIREBASE_READY) {
-        if (/^\d{10}$/.test(q)) {
-          const snap = await db.collection("requests").where("mobile", "==", q)
-            .orderBy("createdAt", "desc").limit(10).get();
-          rows = snap.docs.map((d) => d.data());
-        } else {
-          const doc = await db.collection("requests").doc(q.toUpperCase()).get();
-          if (doc.exists) rows = [doc.data()];
-        }
+      if (/^\d{10}$/.test(q)) {
+        const snap = await db.collection("requests").where("mobile", "==", q).limit(10).get();
+        rows = snap.docs.map((d) => d.data());
+        rows.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
       } else {
-        const all = JSON.parse(localStorage.getItem("sl_demo_requests") || "[]");
-        rows = all.filter((r) => r.mobile === q || (r.requestId || "").toUpperCase() === q.toUpperCase());
+        const doc = await db.collection("requests").doc(q.toUpperCase()).get();
+        if (doc.exists) rows = [doc.data()];
       }
     } catch (err) { console.error(err); }
 

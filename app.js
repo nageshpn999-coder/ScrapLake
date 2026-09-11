@@ -36,7 +36,6 @@ const SCRAP_TYPES = [
   "Farm Machinery Scrap","Borewell Pipe Scrap","Mixed Scrap","Other",
 ];
 
-
 /* ============ Boot ============ */
 document.addEventListener("DOMContentLoaded", () => {
   Lang.set(Lang.current);
@@ -62,7 +61,6 @@ function buildNav() {
     b.addEventListener("click", () => Lang.set(b.dataset.lang))
   );
 }
-
 
 /* ============ Categories ============ */
 function buildCategories() {
@@ -97,73 +95,10 @@ function initReveal() {
   document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
 }
 
-/* ============ Image compression ============ */
-function compressImage(file, maxDim = 1600, quality = 0.78) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
-      const canvas = document.createElement("canvas");
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
-      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-      URL.revokeObjectURL(url);
-      canvas.toBlob(
-        (blob) => (blob ? resolve(blob) : reject(new Error("compress failed"))),
-        "image/jpeg", quality
-      );
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("image load failed")); };
-    img.src = url;
-  });
-}
-
 /* ============ Form ============ */
 function initForm() {
   const form = document.getElementById("pickupForm");
   if (!form) return;
-
-  let photoFiles = []; /* compressed blobs with preview URLs */
-  let videoFile = null;
-
-  const photosInput = document.getElementById("fPhotos");
-  const thumbs = document.getElementById("photoThumbs");
-
-  photosInput.addEventListener("change", async () => {
-    const files = Array.from(photosInput.files || []);
-    for (const f of files) {
-      if (photoFiles.length >= SL.MAX_PHOTOS) {
-        setFieldError(photosInput, Lang.t("err_photos_max"));
-        break;
-      }
-      try {
-        const blob = await compressImage(f);
-        photoFiles.push({ blob, url: URL.createObjectURL(blob), name: f.name });
-        setFieldError(photosInput, "");
-      } catch { /* skip unreadable file */ }
-    }
-    photosInput.value = "";
-    renderThumbs();
-  });
-
-  function renderThumbs() {
-    thumbs.innerHTML = photoFiles.map((p, i) => `
-      <div class="thumb"><img src="${p.url}" alt="Photo ${i + 1}" />
-      <button type="button" data-i="${i}" aria-label="Remove photo">✕</button></div>`).join("");
-  }
-  thumbs.addEventListener("click", (e) => {
-    const btn = e.target.closest("button");
-    if (!btn) return;
-    URL.revokeObjectURL(photoFiles[btn.dataset.i].url);
-    photoFiles.splice(btn.dataset.i, 1);
-    renderThumbs();
-  });
-
-  document.getElementById("fVideo").addEventListener("change", (e) => {
-    videoFile = e.target.files[0] || null;
-    document.getElementById("videoName").textContent = videoFile ? `🎬 ${videoFile.name}` : "";
-  });
 
   /* Geolocation → maps link */
   document.getElementById("geoBtn").addEventListener("click", () => {
@@ -198,20 +133,23 @@ function initForm() {
     const data = collect(form, requestId);
 
     try {
-      if (FIREBASE_READY) {
-        data.photoUrls = await uploadAll(requestId, photoFiles, videoFile, data);
-        await db.collection("requests").doc(requestId).set(data);
-      } else {
-        /* Demo mode: persist locally so the flow is testable before Firebase setup */
-        const all = JSON.parse(localStorage.getItem("sl_demo_requests") || "[]");
-        all.unshift({ ...data, createdAt: Date.now() });
-        localStorage.setItem("sl_demo_requests", JSON.stringify(all));
-        await new Promise((r) => setTimeout(r, 600));
-      }
+      await db.collection("requests").doc(requestId).set(data);
+
       form.hidden = true;
       const box = document.getElementById("successBox");
       document.getElementById("successMsg").textContent =
         Lang.t("success_body").replace("{id}", requestId);
+
+      /* WhatsApp photo prompt, prefilled with the request details */
+      const waText = encodeURIComponent(
+        `ScrapLake — Request ${requestId}\n` +
+        `Name: ${data.name}\nScrap: ${data.type} (${data.weightKg} KG)\n` +
+        `City: ${data.city}\n\n` +
+        `Here are photos of my scrap:`
+      );
+      const waBtn = document.getElementById("waPhotoBtn");
+      if (waBtn) waBtn.href = `https://wa.me/${SL.WHATSAPP}?text=${waText}`;
+
       box.hidden = false;
       box.scrollIntoView({ behavior: "smooth", block: "center" });
     } catch (err) {
@@ -223,37 +161,6 @@ function initForm() {
       btn.textContent = Lang.t("f_submit");
     }
   });
-
-  async function uploadAll(requestId, photos, video, data) {
-    const progress = document.getElementById("uploadProgress");
-    const bar = document.getElementById("uploadBar");
-    const pct = document.getElementById("uploadPct");
-    progress.hidden = false;
-
-    const total = photos.length + (video ? 1 : 0);
-    let done = 0;
-    const tick = () => {
-      const p = total ? Math.round((++done / total) * 100) : 100;
-      bar.style.setProperty("--w", p + "%");
-      pct.textContent = p + "%";
-    };
-
-    const urls = [];
-    for (let i = 0; i < photos.length; i++) {
-      const ref = storage.ref(`requests/${requestId}/photo-${i + 1}.jpg`);
-      await ref.put(photos[i].blob, { contentType: "image/jpeg" });
-      urls.push(await ref.getDownloadURL());
-      tick();
-    }
-    if (video) {
-      const ref = storage.ref(`requests/${requestId}/video-${video.name}`);
-      await ref.put(video);
-      data.videoUrl = await ref.getDownloadURL();
-      tick();
-    }
-    progress.hidden = true;
-    return urls;
-  }
 }
 
 function collect(form, requestId) {
@@ -269,7 +176,7 @@ function collect(form, requestId) {
     date: v("fDate"), time: v("fTime"), notes: v("fNotes"),
     status: "Pending", paymentStatus: "Payment Pending",
     photoUrls: [], videoUrl: "",
-    createdAt: FIREBASE_READY ? firebase.firestore.FieldValue.serverTimestamp() : Date.now(),
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   };
 }
 

@@ -1,26 +1,23 @@
-/* ScrapLake — Firebase configuration
- *
- * 1. Create a project at https://console.firebase.google.com
- * 2. Enable: Authentication (Email/Password), Cloud Firestore, Storage
- * 3. Project settings → Your apps → Web app → copy the config below
- * 4. Deploy firestore.rules and storage.rules (see README.md)
- */
+/* ScrapLake — Firebase configuration */
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyAHc3d9g0C8CHGeBD_-V8fUC21i7Z0NlD8",
+  authDomain: "scraplake.firebaseapp.com",
+  projectId: "scraplake",
+  storageBucket: "scraplake.firebasestorage.app",
+  messagingSenderId: "388340330039",
+  appId: "1:388340330039:web:b72de41a5005f7c00319b2",
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const storage = firebase.storage();
 const auth = firebase.auth();
 
-/* Detect placeholder config so the UI can fall back to demo mode gracefully. */
-const FIREBASE_READY = !firebaseConfig.apiKey.startsWith("YOUR_");
+const FIREBASE_READY = true;
+
+/* Photo upload is OFF (Firebase Storage needs the paid Blaze plan).
+   Customers are asked to send photos on WhatsApp instead.
+   To turn it on later: upgrade to Blaze, enable Storage, set this to true. */
+const PHOTO_UPLOAD_ENABLED = false;
 
 /* Shared constants */
 const SL = {
@@ -29,7 +26,6 @@ const SL = {
   WHATSAPP: "919515624416",
   EMAIL: "info@scraplake.in",
   MIN_WEIGHT_KG: 100,
-  MAX_PHOTOS: 15,
   STATUSES: [
     "Pending", "Accepted", "Pickup Scheduled", "Driver Assigned",
     "On The Way", "Picked Up", "Completed", "Cancelled",
@@ -37,7 +33,7 @@ const SL = {
   PAYMENT_STATUSES: ["Payment Pending", "Payment Completed"],
 };
 
-/* Human-readable request ID, e.g. SL-260709-4F2K */
+/* Human-readable request ID, e.g. SL-260911-4F2K */
 function makeRequestId() {
   const d = new Date();
   const ymd = d.toISOString().slice(2, 10).replace(/-/g, "");

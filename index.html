@@ -168,16 +168,9 @@
                 <div class="field"><label for="fQty"><span data-i18n="f_qty">Estimated Quantity</span> <em class="opt" data-i18n="f_optional">Optional</em></label><input id="fQty" name="quantity" type="text" placeholder="e.g. 2 truck loads, 40 pieces" /><small class="err"></small></div>
               </div>
 
-              <div class="field">
-                <label for="fPhotos" data-i18n="f_photos">Upload Photos (up to 15)</label>
-                <input id="fPhotos" name="photos" type="file" accept="image/*" multiple />
-                <div class="thumbs" id="photoThumbs" aria-live="polite"></div>
-                <small class="err"></small>
-              </div>
-              <div class="field">
-                <label for="fVideo" data-i18n="f_video">Upload Video (Optional)</label>
-                <input id="fVideo" name="video" type="file" accept="video/*" />
-                <small class="hint" id="videoName"></small><small class="err"></small>
+              <div class="wa-photo-note">
+                <span class="wa-ic">📸</span>
+                <p data-i18n="photo_note">After submitting, send photos of your scrap on WhatsApp — it helps us quote a better price.</p>
               </div>
             </fieldset>
 
@@ -220,7 +213,6 @@
             </fieldset>
 
             <div class="form-foot">
-              <div class="progress" id="uploadProgress" hidden><div class="progress-bar" id="uploadBar"></div><span id="uploadPct">0%</span></div>
               <button type="submit" class="btn btn-primary btn-lg btn-block" id="submitBtn" data-i18n="f_submit">Submit Request</button>
               <p class="form-error" id="formError" role="alert" hidden></p>
             </div>
@@ -230,7 +222,8 @@
             <div class="success-ic">✓</div>
             <h3 data-i18n="success_title">Request submitted!</h3>
             <p id="successMsg"></p>
-            <a class="btn btn-outline" href="track.html" data-i18n="success_track">Track your pickup</a>
+            <a class="btn btn-wa btn-lg btn-block" id="waPhotoBtn" href="#" target="_blank" rel="noopener" data-i18n="success_wa">Send photos on WhatsApp</a>
+            <a class="btn btn-outline" href="track.html" data-i18n="success_track" style="margin-top:.7rem">Track your pickup</a>
           </div>
         </div>
       </div>

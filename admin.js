@@ -1,8 +1,8 @@
 /* ScrapLake — admin.js */
 "use strict";
 
-let ALL = [];              /* all requests */
-let statFilter = "";       /* stat card filter */
+let ALL = [];
+let statFilter = "";
 let unsubscribe = null;
 
 const STAT_DEFS = [
@@ -28,16 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
 function initAuth() {
   const loginWrap = document.getElementById("loginWrap");
   const dash = document.getElementById("dashboard");
-
-  if (!FIREBASE_READY) {
-    /* Demo mode: no auth, load local demo data */
-    loginWrap.hidden = true;
-    dash.hidden = false;
-    document.getElementById("adminWho").textContent = "Demo mode (Firebase not configured)";
-    ALL = JSON.parse(localStorage.getItem("sl_demo_requests") || "[]");
-    render();
-    return;
-  }
 
   auth.onAuthStateChanged((user) => {
     loginWrap.hidden = !!user;
@@ -73,7 +63,11 @@ function subscribe() {
     .onSnapshot((snap) => {
       ALL = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
       render();
-    }, (err) => console.error("Firestore listen error", err));
+    }, (err) => {
+      console.error("Firestore listen error", err);
+      document.getElementById("reqList").innerHTML =
+        `<p class="empty">Could not load requests. Check your Firestore security rules.</p>`;
+    });
 }
 
 /* ============ Tools ============ */
@@ -162,8 +156,10 @@ function renderList(rows) {
 
   list.innerHTML = rows.map((r) => {
     const when = r.createdAt?.toDate ? r.createdAt.toDate() : new Date(r.createdAt);
-    const photos = (r.photoUrls || []).map((u) =>
-      `<a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="scrap photo" loading="lazy"/></a>`).join("");
+    const waMsg = encodeURIComponent(
+      `Hi ${r.name}, this is ScrapLake regarding your pickup request ${r.requestId || ""}. ` +
+      `Please send photos of your scrap here so we can confirm the rate.`
+    );
     return `
     <article class="req-card" data-id="${esc(r.requestId || r.id)}">
       <div class="req-head">
@@ -178,11 +174,9 @@ function renderList(rows) {
         <span>📍 ${esc(r.address)}, ${esc(r.landmark || "")} ${esc(r.city)}, ${esc(r.state)} — ${esc(r.pincode)}</span>
         <span>🗓 ${esc(r.date)} · ${esc(r.time)}${r.notes ? " · 📝 " + esc(r.notes) : ""}</span>
       </div>
-      ${photos ? `<div class="req-photos">${photos}</div>` : ""}
-      ${r.videoUrl ? `<a class="btn btn-outline btn-sm" href="${esc(r.videoUrl)}" target="_blank" rel="noopener">▶ View video</a>` : ""}
       <div class="req-actions">
         <a class="btn btn-primary" href="tel:+91${esc(r.mobile)}">📞 Call</a>
-        <a class="btn btn-wa" href="https://wa.me/91${esc(r.mobile)}?text=${encodeURIComponent(`Hi ${r.name}, this is ScrapLake regarding your pickup request ${r.requestId || ""}.`)}" target="_blank" rel="noopener">💬 WhatsApp</a>
+        <a class="btn btn-wa" href="https://wa.me/91${esc(r.mobile)}?text=${waMsg}" target="_blank" rel="noopener">💬 WhatsApp</a>
         ${r.mapsLink ? `<a class="btn btn-outline" href="${esc(r.mapsLink)}" target="_blank" rel="noopener">🗺 Map</a>` : ""}
         <select class="status-select" data-act="status">
           ${SL.STATUSES.map((s) => `<option ${s === r.status ? "selected" : ""}>${s}</option>`).join("")}
@@ -214,21 +208,20 @@ function renderList(rows) {
 
 /* ============ Mutations ============ */
 async function updateRequest(id, patch) {
-  if (FIREBASE_READY) {
+  try {
     await db.collection("requests").doc(id).update(patch);
-  } else {
-    const i = ALL.findIndex((r) => (r.requestId || r.id) === id);
-    if (i > -1) { Object.assign(ALL[i], patch); localStorage.setItem("sl_demo_requests", JSON.stringify(ALL)); render(); }
+  } catch (e) {
+    alert("Could not update. Check your admin permissions in Firestore rules.");
+    console.error(e);
   }
 }
 
 async function deleteRequest(id) {
-  if (FIREBASE_READY) {
+  try {
     await db.collection("requests").doc(id).delete();
-  } else {
-    ALL = ALL.filter((r) => (r.requestId || r.id) !== id);
-    localStorage.setItem("sl_demo_requests", JSON.stringify(ALL));
-    render();
+  } catch (e) {
+    alert("Could not delete. Check your admin permissions in Firestore rules.");
+    console.error(e);
   }
 }
 
@@ -250,12 +243,11 @@ function exportCsv() {
   URL.revokeObjectURL(a.href);
 }
 
-/* Single-request PDF via a print-friendly window (browser "Save as PDF") */
 function printCard(card) {
   const w = window.open("", "_blank");
   w.document.write(`<!DOCTYPE html><html><head><title>ScrapLake Request</title>
     <style>body{font-family:Arial,sans-serif;padding:24px;color:#1E293B}
-    h1{color:#0F766E;font-size:20px}img{max-width:120px;border-radius:8px;margin:4px}
+    h1{color:#0F766E;font-size:20px}
     .badge{background:#F59E0B22;padding:2px 8px;border-radius:99px;font-size:12px}</style>
     </head><body><h1>ScrapLake — Pickup Request</h1>${card.innerHTML}
     <script>document.querySelectorAll('.req-actions,select,button').forEach(e=>e.remove());
