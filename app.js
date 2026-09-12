@@ -100,18 +100,6 @@ function initForm() {
   const form = document.getElementById("pickupForm");
   if (!form) return;
 
-  /* Geolocation → maps link */
-  document.getElementById("geoBtn").addEventListener("click", () => {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        document.getElementById("fMaps").value =
-          `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-      },
-      () => setFieldError(document.getElementById("fMaps"), Lang.t("err_generic"))
-    );
-  });
-
   /* Live minimum-weight validation */
   const weightInput = document.getElementById("fWeight");
   weightInput.addEventListener("input", () => {
@@ -167,15 +155,13 @@ function collect(form, requestId) {
   const v = (id) => document.getElementById(id).value.trim();
   return {
     requestId,
-    name: v("fName"), mobile: v("fMobile"), altMobile: v("fAlt"),
-    company: v("fCompany"), gst: v("fGst").toUpperCase(),
+    name: v("fName"), mobile: v("fMobile"),
+    gst: v("fGst").toUpperCase(),
     category: v("fCat"), type: v("fType"),
-    weightKg: parseFloat(v("fWeight")), quantity: v("fQty"),
-    address: v("fAddress"), mapsLink: v("fMaps"), landmark: v("fLandmark"),
-    city: v("fCity"), state: v("fState"), pincode: v("fPincode"),
-    date: v("fDate"), time: v("fTime"), notes: v("fNotes"),
+    weightKg: parseFloat(v("fWeight")),
+    address: v("fAddress"), city: v("fCity"), pincode: v("fPincode"),
+    date: v("fDate"),
     status: "Pending", paymentStatus: "Payment Pending",
-    photoUrls: [], videoUrl: "",
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   };
 }
@@ -202,8 +188,6 @@ function validate(form) {
 
   const mob = document.getElementById("fMobile");
   if (mob.value && !mobileRe.test(mob.value)) { setFieldError(mob, Lang.t("err_mobile")); ok = false; }
-  const alt = document.getElementById("fAlt");
-  if (alt.value && !mobileRe.test(alt.value)) { setFieldError(alt, Lang.t("err_mobile")); ok = false; }
   const pin = document.getElementById("fPincode");
   if (pin.value && !pinRe.test(pin.value)) { setFieldError(pin, Lang.t("err_pincode")); ok = false; }
   const gst = document.getElementById("fGst");

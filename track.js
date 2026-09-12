@@ -56,7 +56,7 @@ function renderResult(r) {
     </div>
     <div class="req-meta">
       <span>${esc(r.category)} → <b>${esc(r.type)}</b> · ${esc(r.weightKg)} KG</span>
-      <span>🗓 ${esc(r.date)} · ${esc(r.time)}</span>
+      <span>🗓 ${esc(r.date)}</span>
     </div>
     ${cancelled
       ? `<p style="color:var(--red);font-weight:600;font-size:.9rem">This request was cancelled. Call us to rebook.</p>`

@@ -93,7 +93,7 @@ function filtered() {
   const st = document.getElementById("statusFilter").value;
   const ty = document.getElementById("typeFilter").value;
   return ALL.filter((r) => {
-    if (q && !(`${r.name} ${r.mobile} ${r.altMobile} ${r.requestId}`.toLowerCase().includes(q))) return false;
+    if (q && !(`${r.name} ${r.mobile} ${r.requestId}`.toLowerCase().includes(q))) return false;
     if (st && r.status !== st) return false;
     if (ty && r.type !== ty) return false;
     if (statFilter === "today" && !isToday(r)) return false;
@@ -169,15 +169,14 @@ function renderList(rows) {
         <span style="margin-left:auto;font-size:.78rem;color:#64748B">${when ? when.toLocaleString("en-IN") : ""}</span>
       </div>
       <div class="req-meta">
-        <span><b>${esc(r.name)}</b> · ${esc(r.mobile)}${r.altMobile ? " / " + esc(r.altMobile) : ""}${r.company ? " · " + esc(r.company) : ""}${r.gst ? " · GST " + esc(r.gst) : ""}</span>
-        <span>${esc(r.category)} → <b>${esc(r.type)}</b> · ${esc(r.weightKg)} KG${r.quantity ? " · " + esc(r.quantity) : ""}</span>
-        <span>📍 ${esc(r.address)}, ${esc(r.landmark || "")} ${esc(r.city)}, ${esc(r.state)} — ${esc(r.pincode)}</span>
-        <span>🗓 ${esc(r.date)} · ${esc(r.time)}${r.notes ? " · 📝 " + esc(r.notes) : ""}</span>
+        <span><b>${esc(r.name)}</b> · ${esc(r.mobile)}${r.gst ? " · GST " + esc(r.gst) : ""}</span>
+        <span>${esc(r.category)} → <b>${esc(r.type)}</b> · ${esc(r.weightKg)} KG</span>
+        <span>📍 ${esc(r.address)}, ${esc(r.city)} — ${esc(r.pincode)}</span>
+        <span>🗓 ${esc(r.date)}</span>
       </div>
       <div class="req-actions">
         <a class="btn btn-primary" href="tel:+91${esc(r.mobile)}">📞 Call</a>
         <a class="btn btn-wa" href="https://wa.me/91${esc(r.mobile)}?text=${waMsg}" target="_blank" rel="noopener">💬 WhatsApp</a>
-        ${r.mapsLink ? `<a class="btn btn-outline" href="${esc(r.mapsLink)}" target="_blank" rel="noopener">🗺 Map</a>` : ""}
         <select class="status-select" data-act="status">
           ${SL.STATUSES.map((s) => `<option ${s === r.status ? "selected" : ""}>${s}</option>`).join("")}
         </select>
@@ -228,8 +227,8 @@ async function deleteRequest(id) {
 /* ============ Export / print ============ */
 function exportCsv() {
   const rows = filtered();
-  const cols = ["requestId","name","mobile","altMobile","company","gst","category","type","weightKg",
-    "quantity","address","landmark","city","state","pincode","date","time","status","paymentStatus","notes"];
+  const cols = ["requestId","name","mobile","gst","category","type","weightKg",
+    "address","city","pincode","date","status","paymentStatus"];
   const escCsv = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
   const csv = [cols.join(",")]
     .concat(rows.map((r) => cols.map((c) => escCsv(r[c])).join(",")))

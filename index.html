@@ -153,10 +153,8 @@
               <div class="grid-2">
                 <div class="field"><label for="fName" data-i18n="f_name">Customer Name</label><input id="fName" name="name" type="text" autocomplete="name" required /><small class="err"></small></div>
                 <div class="field"><label for="fMobile" data-i18n="f_mobile">Mobile Number</label><input id="fMobile" name="mobile" type="tel" inputmode="numeric" maxlength="10" autocomplete="tel-national" required /><small class="err"></small></div>
-                <div class="field"><label for="fAlt"><span data-i18n="f_alt">Alternative Mobile Number</span> <em class="opt" data-i18n="f_optional">Optional</em></label><input id="fAlt" name="altMobile" type="tel" inputmode="numeric" maxlength="10" /><small class="err"></small></div>
-                <div class="field"><label for="fCompany"><span data-i18n="f_company">Company Name</span> <em class="opt" data-i18n="f_optional">Optional</em></label><input id="fCompany" name="company" type="text" autocomplete="organization" /><small class="err"></small></div>
-                <div class="field"><label for="fGst"><span data-i18n="f_gst">GST Number</span> <em class="opt" data-i18n="f_optional">Optional</em></label><input id="fGst" name="gst" type="text" maxlength="15" style="text-transform:uppercase" /><small class="err"></small></div>
               </div>
+              <div class="field"><label for="fGst"><span data-i18n="f_gst">GST Number</span> <em class="opt" data-i18n="f_optional">Optional</em></label><input id="fGst" name="gst" type="text" maxlength="15" style="text-transform:uppercase" /><small class="err"></small></div>
             </fieldset>
 
             <fieldset>
@@ -164,9 +162,8 @@
               <div class="grid-2">
                 <div class="field"><label for="fCat" data-i18n="f_cat">Scrap Category</label><select id="fCat" name="category" required></select><small class="err"></small></div>
                 <div class="field"><label for="fType" data-i18n="f_type">Scrap Type</label><select id="fType" name="type" required></select><small class="err"></small></div>
-                <div class="field"><label for="fWeight" data-i18n="f_weight">Approximate Weight (KG)</label><input id="fWeight" name="weight" type="number" min="1" step="1" inputmode="numeric" required /><small class="err"></small></div>
-                <div class="field"><label for="fQty"><span data-i18n="f_qty">Estimated Quantity</span> <em class="opt" data-i18n="f_optional">Optional</em></label><input id="fQty" name="quantity" type="text" placeholder="e.g. 2 truck loads, 40 pieces" /><small class="err"></small></div>
               </div>
+              <div class="field"><label for="fWeight" data-i18n="f_weight">Approximate Weight (KG)</label><input id="fWeight" name="weight" type="number" min="1" step="1" inputmode="numeric" required /><small class="err"></small></div>
 
               <div class="wa-photo-note">
                 <span class="wa-ic">📸</span>
@@ -177,39 +174,15 @@
             <fieldset>
               <legend>3 · Pickup address</legend>
               <div class="field"><label for="fAddress" data-i18n="f_address">Pickup Address</label><textarea id="fAddress" name="address" rows="2" autocomplete="street-address" required></textarea><small class="err"></small></div>
-              <div class="field">
-                <label for="fMaps"><span data-i18n="f_maps">Google Maps Location</span> <em class="opt" data-i18n="f_optional">Optional</em></label>
-                <div class="input-row">
-                  <input id="fMaps" name="mapsLink" type="url" placeholder="https://maps.google.com/…" />
-                  <button type="button" class="btn btn-outline btn-sm" id="geoBtn" data-i18n="f_maps_btn">Use my location</button>
-                </div>
-                <small class="err"></small>
-              </div>
               <div class="grid-2">
-                <div class="field"><label for="fLandmark"><span data-i18n="f_landmark">Landmark</span> <em class="opt" data-i18n="f_optional">Optional</em></label><input id="fLandmark" name="landmark" type="text" /><small class="err"></small></div>
                 <div class="field"><label for="fCity" data-i18n="f_city">City</label><input id="fCity" name="city" type="text" autocomplete="address-level2" required /><small class="err"></small></div>
-                <div class="field"><label for="fState" data-i18n="f_state">State</label><input id="fState" name="state" type="text" autocomplete="address-level1" required /><small class="err"></small></div>
                 <div class="field"><label for="fPincode" data-i18n="f_pincode">Pincode</label><input id="fPincode" name="pincode" type="text" inputmode="numeric" maxlength="6" autocomplete="postal-code" required /><small class="err"></small></div>
               </div>
             </fieldset>
 
             <fieldset>
               <legend>4 · Schedule</legend>
-              <div class="grid-2">
-                <div class="field"><label for="fDate" data-i18n="f_date">Preferred Pickup Date</label><input id="fDate" name="date" type="date" required /><small class="err"></small></div>
-                <div class="field">
-                  <label for="fTime" data-i18n="f_time">Preferred Pickup Time</label>
-                  <select id="fTime" name="time" required>
-                    <option value="">—</option>
-                    <option>8 AM – 11 AM</option>
-                    <option>11 AM – 2 PM</option>
-                    <option>2 PM – 5 PM</option>
-                    <option>5 PM – 8 PM</option>
-                  </select>
-                  <small class="err"></small>
-                </div>
-              </div>
-              <div class="field"><label for="fNotes"><span data-i18n="f_notes">Additional Notes</span> <em class="opt" data-i18n="f_optional">Optional</em></label><textarea id="fNotes" name="notes" rows="2"></textarea><small class="err"></small></div>
+              <div class="field"><label for="fDate" data-i18n="f_date">Preferred Pickup Date</label><input id="fDate" name="date" type="date" required /><small class="err"></small></div>
             </fieldset>
 
             <div class="form-foot">
